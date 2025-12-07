@@ -1,6 +1,9 @@
-  // --- CONFIGURAÇÃO PRINCIPAL ---
+// --- CONFIGURAÇÃO PRINCIPAL ---
     const CONFIG = { 
         mainTopicId: 1, 
+        topicDA: 2,  // Tópico do Departamento de Aplicação
+        topicDRI: 3, // Tópico do Departamento de Relações Internacionais
+        topicDM: 4,  // Tópico do Departamento Militar
         sheetUrl: "https://script.google.com/macros/s/AKfycbxxFGcukrz75Y80Dvlawthnbx1QnUUy-keqR6KAlNxQXeeUujKPi982bPTXlbyYfsIxuQ/exec",
         daSheetUrl: "https://script.google.com/macros/s/AKfycbw-NBtKacudTTa5aH-BhF_foiGa8_4IrWVtS8zVq7b8j0PkA8r-o8JaAUw5SrazJAFu/exec" 
     };
@@ -986,9 +989,29 @@
         } else if (formId === 'form-prolongamento') {
             sheetName = "Prolongamento";
             rows.push([timestamp, formData.get('nickname'), formData.get('dias')]);
+
         } else if (formId === 'form-licenca') {
+            // CORREÇÃO: "Data/Hora | Tipo | Nickname | Dias | Retorno | Permissão"
             sheetName = "Licença";
-            rows.push([timestamp, formData.get('nickname'), formData.get('dias'), formData.get('permissao')]);
+            const nick = formData.get('nickname');
+            const dias = parseInt(formData.get('dias'));
+            const permissao = formData.get('permissao');
+
+            // Lógica do Tipo (Licença ou Reserva)
+            const tipo = dias <= 30 ? "Licença" : "Reserva";
+
+            // Cálculo da Data de Retorno
+            const dataRetornoObj = new Date();
+            dataRetornoObj.setDate(dataRetornoObj.getDate() + dias);
+            const retorno = dataRetornoObj.toLocaleDateString('pt-BR');
+
+            // Separa múltiplos nicks caso o usuário use barras (ex: "Nick1 / Nick2")
+            // Mesmo que não use chips, o sistema aceita barras.
+            const nicks = nick.split('/').map(n => n.trim()).filter(n => n);
+            
+            nicks.forEach(n => {
+                 rows.push([timestamp, tipo, n, dias, retorno, permissao]);
+            });
         }
 
         if (!sheetName || rows.length === 0) return;
@@ -1275,9 +1298,13 @@
                     if (form.id === 'form-licenca' && document.getElementById('check-subgrupo-licenca').checked) {
                         const selectedButtons = document.querySelectorAll('#subgroup-options-container .subgroup-selection-btn.selected');
                         selectedButtons.forEach(b => {
+                            // Agora busca o ID do tópico diretamente do CONFIG usando o data-group (DA, DRI, DM)
+                            const groupName = b.dataset.group; // Ex: "DA"
+                            const configKey = "topic" + groupName; // Ex: "topicDA"
+                            
                             subgruposParaPostar.push({
-                                id: b.dataset.topic,
-                                name: b.dataset.name
+                                id: CONFIG[configKey], // Pega o ID (2, 3 ou 4) do CONFIG
+                                name: groupName
                             });
                         });
                     }
