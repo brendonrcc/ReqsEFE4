@@ -26,6 +26,71 @@
     // --- VARIÁVEL PARA CONTROLE DE TEMPO DO DA ---
     let daStartTime = null;
 
+function setVisualMode(mode) {
+        const body = document.body;
+        const btnTurbo = document.getElementById('btn-turbo');
+        const btnPerf = document.getElementById('btn-performance');
+
+        if (mode === 'performance') {
+            // Ativa modo leve
+            body.classList.add('performance-mode');
+            
+            // Atualiza botões visualmente
+            if(btnPerf) btnPerf.classList.add('active-mode');
+            if(btnTurbo) btnTurbo.classList.remove('active-mode');
+            
+            // Salva preferência
+            localStorage.setItem('wavex_visual_mode', 'performance');
+            
+            console.log("Modo Performance Ativado");
+        } else {
+            // Ativa modo turbo (padrão)
+            body.classList.remove('performance-mode');
+            
+            // Atualiza botões visualmente
+            if(btnTurbo) btnTurbo.classList.add('active-mode');
+            if(btnPerf) btnPerf.classList.remove('active-mode');
+            
+            // Salva preferência
+            localStorage.setItem('wavex_visual_mode', 'turbo');
+            
+            console.log("Modo Turbo Ativado");
+        }
+    }
+
+    // --- [ATUALIZADO] INICIALIZAÇÃO (ZOOM + MODO VISUAL) ---
+    window.addEventListener('DOMContentLoaded', () => {
+        // 1. Carregar Modo Visual Salvo
+        const savedMode = localStorage.getItem('wavex_visual_mode');
+        if (savedMode === 'performance') {
+            setVisualMode('performance');
+        } else {
+            setVisualMode('turbo'); // Padrão
+        }
+
+        // 2. Carregar Zoom Salvo (Código antigo mantido)
+        const savedZoom = localStorage.getItem('wavex_zoom');
+        if(savedZoom) {
+            currentZoom = parseFloat(savedZoom);
+            applyZoom();
+        }
+
+        // 3. Configurar Inputs e Botões (Código antigo mantido)
+        document.querySelectorAll('.input-field').forEach(input => {
+            if (input.nextElementSibling && input.nextElementSibling.classList.contains('add-nick-btn')) {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault(); 
+                        this.nextElementSibling.click(); 
+                    }
+                });
+            }
+        });
+        
+        // 4. Checar parâmetros da URL
+        checkAndApplyUrlParams();
+    });
+
     // --- FUNÇÃO PARA ALTERNAR MODO DA (Entrada) ---
     function toggleDAOptions() {
         const checkbox = document.getElementById('check-membro-da');
@@ -155,49 +220,6 @@
             throw new Error("Falha ao registrar Log do DA.");
         }
     }
-
-function setVisualMode(mode) {
-        const body = document.body;
-        const btnTurbo = document.getElementById('btn-turbo');
-        const btnPerf = document.getElementById('btn-performance');
-
-        if (mode === 'performance') {
-            // Ativa modo leve
-            body.classList.add('performance-mode');
-            
-            // Atualiza botões
-            if(btnPerf) btnPerf.classList.add('active-mode');
-            if(btnTurbo) btnTurbo.classList.remove('active-mode');
-            
-            // Salva preferência
-            localStorage.setItem('wavex_visual_mode', 'performance');
-            
-            // Feedback sutil
-            console.log("Modo Performance Ativado");
-        } else {
-            // Ativa modo turbo (padrão)
-            body.classList.remove('performance-mode');
-            
-            // Atualiza botões
-            if(btnTurbo) btnTurbo.classList.add('active-mode');
-            if(btnPerf) btnPerf.classList.remove('active-mode');
-            
-            // Salva preferência
-            localStorage.setItem('wavex_visual_mode', 'turbo');
-            
-            console.log("Modo Turbo Ativado");
-        }
-    }
-
-    // Carregar preferência salva ao iniciar
-    window.addEventListener('DOMContentLoaded', () => {
-        const savedMode = localStorage.getItem('wavex_visual_mode');
-        // Se houver salvo 'performance', aplica. Caso contrário, mantém Turbo (padrão)
-        if (savedMode === 'performance') {
-            setVisualMode('performance');
-        } else {
-            setVisualMode('turbo'); // Garante estado inicial dos botões
-        }
     
     function toggleSettings() {
         const menu = document.getElementById('settings-menu');
