@@ -1,71 +1,55 @@
- // --- CONFIGURAÇÃO PRINCIPAL ---
     const CONFIG = { 
-        mainTopicId: 1, 
-        topicDA: 2, 
-        topicDRI: 3,
-        topicDM: 4,  
+        mainTopicId: 38026, 
+        topicDA: 38468, 
+        topicDRI: 38580,
+        topicDM: 36210,  
         sheetUrl: "https://script.google.com/macros/s/AKfycbxxFGcukrz75Y80Dvlawthnbx1QnUUy-keqR6KAlNxQXeeUujKPi982bPTXlbyYfsIxuQ/exec",
         daSheetUrl: "https://script.google.com/macros/s/AKfycbw-NBtKacudTTa5aH-BhF_foiGa8_4IrWVtS8zVq7b8j0PkA8r-o8JaAUw5SrazJAFu/exec" 
     };
     
-    // --- LINKS DE MP DO GITHUB ---
     const MP_LINKS = {
         entrada: "https://raw.githubusercontent.com/BrendonMonteiro/mpteste/refs/heads/main/mpentrada",
-        saida: "https://raw.githubusercontent.com/BrendonMonteiro/mpteste/refs/heads/main/mpsa%C3%ADda",
         punicao: "https://raw.githubusercontent.com/BrendonMonteiro/mpteste/refs/heads/main/mppunicao",
-        promo_mentor: "https://raw.githubusercontent.com/BrendonMonteiro/mpteste/refs/heads/main/promomentor",
-        promo_cap: "https://raw.githubusercontent.com/BrendonMonteiro/mpteste/refs/heads/main/promocap",
-        promo_grad: "https://raw.githubusercontent.com/BrendonMonteiro/mpteste/refs/heads/main/promograd",
-        promo_est: "https://raw.githubusercontent.com/BrendonMonteiro/mpteste/refs/heads/main/promoest",
-        promo_min: "https://raw.githubusercontent.com/BrendonMonteiro/mpteste/refs/heads/main/promomin"
     };
 
     const MP_DELAY = 5000; 
     let currentZoom = 1;
 
-    // --- VARIÁVEL PARA CONTROLE DE TEMPO DO DA ---
     let daStartTime = null;
 
-// --- FUNÇÃO DE MODO VISUAL (PERFORMANCE/TURBO) ---
     function setVisualMode(mode) {
         const body = document.body;
         const btnTurbo = document.getElementById('btn-turbo');
         const btnPerf = document.getElementById('btn-performance');
 
         if (mode === 'performance') {
-            // Ativa modo leve
             body.classList.add('performance-mode');
-            
-            // Atualiza botões
+
             if(btnPerf) btnPerf.classList.add('active-mode');
             if(btnTurbo) btnTurbo.classList.remove('active-mode');
-            
-            // Salva preferência
+
             localStorage.setItem('wavex_visual_mode', 'performance');
             
-            // Esconde loader forçadamente caso ainda esteja na tela
+
             const loader = document.getElementById('tech-loader');
             if(loader) loader.style.display = 'none';
 
             console.log("Modo Performance Ativado");
         } else {
-            // Ativa modo turbo (padrão)
+
             body.classList.remove('performance-mode');
             
-            // Atualiza botões
             if(btnTurbo) btnTurbo.classList.add('active-mode');
             if(btnPerf) btnPerf.classList.remove('active-mode');
             
-            // Salva preferência
             localStorage.setItem('wavex_visual_mode', 'turbo');
             
             console.log("Modo Turbo Ativado");
         }
     }
 
-    // --- INICIALIZAÇÃO ---
+
     window.addEventListener('DOMContentLoaded', () => {
-        // 1. Carregar Modo Visual Salvo (Executa imediatamente)
         const savedMode = localStorage.getItem('wavex_visual_mode');
         if (savedMode === 'performance') {
             setVisualMode('performance');
@@ -80,7 +64,6 @@
             applyZoom();
         }
 
-        // 3. Configurar Inputs e Botões
         document.querySelectorAll('.input-field').forEach(input => {
             if (input.nextElementSibling && input.nextElementSibling.classList.contains('add-nick-btn')) {
                 input.addEventListener('keydown', function(e) {
@@ -96,7 +79,6 @@
         checkAndApplyUrlParams();
     });
 
-    // --- FUNÇÃO PARA ALTERNAR MODO DA (Entrada) ---
     function toggleDAOptions() {
         const checkbox = document.getElementById('check-membro-da');
         const wrapper = document.querySelector('.da-toggle-wrapper');
@@ -132,9 +114,7 @@
         }
     }
 
-    // --- FUNÇÕES GERAIS PARA SUBGRUPOS (Licença, Retorno, Prolongamento) ---
     function toggleSubgroupOptions(checkbox) {
-        // Encontra o wrapper pai e o container de opções dentro do mesmo formulário
         const wrapper = checkbox.closest('.da-toggle-wrapper');
         const form = checkbox.closest('form');
         const container = form.querySelector('.subgroup-options-wrapper');
@@ -160,11 +140,8 @@
         const group = btn.dataset.group; // DA, DRI, DM
         const form = btn.closest('form');
         
-        // CORREÇÃO: Apenas 'form-licenca' exige inputs de permissão extras.
-        // Retorno e Prolongamento não pedem.
         const shouldShowInput = (form.id === 'form-licenca'); 
 
-        // Se não precisar de input (ex: retorno), para por aqui (apenas seleção visual)
         if (!shouldShowInput) return;
 
         const optionsWrapper = btn.closest('.subgroup-options-wrapper');
@@ -172,7 +149,6 @@
         const inputId = `perm-group-${group}`;
 
         if (btn.classList.contains('selected')) {
-            // Criar campo de permissão dinâmico e minimalista
             const wrapper = document.createElement('div');
             wrapper.id = inputId;
             wrapper.className = "minimal-perm-group";
@@ -198,7 +174,6 @@
         }
     }
 
-    // --- FUNÇÃO PARA ENVIAR PARA A PLANILHA DO DA ---
     async function sendToLogDA(aplicador, horaInicial, participantes, veredito) {
         if (!CONFIG.daSheetUrl || CONFIG.daSheetUrl === "URL_DO_SEU_WEB_APP_DA_AQUI") {
             console.error("URL do Script DA não configurada.");
@@ -293,8 +268,10 @@
     window.addEventListener('load', () => {
         const loader = document.getElementById('tech-loader');
         setTimeout(() => {
-            loader.classList.add('loaded');
-            setTimeout(() => loader.remove(), 600);
+            if(loader) {
+                loader.classList.add('loaded');
+                setTimeout(() => loader.remove(), 600);
+            }
         }, 1200);
     });
 
@@ -312,6 +289,7 @@
     let isDropdownOpen = false;
 
     function toggleDropdown(state) {
+        if (!dropdownOptionsPanel) return;
         isDropdownOpen = state !== undefined ? state : !isDropdownOpen;
         if(isDropdownOpen){
             dropdownOptionsPanel.classList.remove('hidden-style');
@@ -326,8 +304,10 @@
         }
     }
 
-    dropdownButton.addEventListener('click', (e) => { e.stopPropagation(); toggleDropdown(); });
-    window.addEventListener('click', () => toggleDropdown(false));
+    if(dropdownButton) {
+        dropdownButton.addEventListener('click', (e) => { e.stopPropagation(); toggleDropdown(); });
+        window.addEventListener('click', () => toggleDropdown(false));
+    }
 
     document.querySelectorAll('.custom-dropdown-option').forEach(option => {
         option.addEventListener('click', () => {
@@ -382,7 +362,8 @@
 
     function showToast(title, message, type = "info", duration = 6000) {
         const container = document.getElementById('toast-container');
-        
+        if(!container) return;
+
         const colors = {
             warning: "bg-amber-50 border-amber-200 text-amber-800",
             danger: "bg-red-50 border-red-200 text-red-800",
@@ -427,6 +408,10 @@
     }
 
     async function updateAvatarIcon(input) {
+        // --- MODIFICAÇÃO INICIO: IGNORAR VERIFICAÇÃO PARA FORM-ATUALIZACAO ---
+        if (input.closest && input.closest('#form-atualizacao')) return;
+        // --- MODIFICAÇÃO FIM ---
+
         const nick = input.value.trim();
         const iconBox = input.previousElementSibling;
         if (!nick) return;
@@ -446,7 +431,6 @@
         } catch (e) { console.error(e); }
     }
 
-    /* --- LOGICA DE CHIPS E GRUPOS --- */
     async function verifyAndAddNickname(inputId, chipsContainerId, hiddenInputId, containerId, limit = 99, enableGroups = false) {
         const input = document.getElementById(inputId);
         const btn = input.nextElementSibling;
@@ -810,7 +794,6 @@
                     `[b][EFE] Atualização realizada! [${tag}][/b][/td][/tr][/table]\n\n` +
                     `[table style="width: 23%; border: none!important; overflow: hidden; border-radius: 0 0 5px 5px; position: relative; margin: auto; bottom: 4.6em; font-family: 'Poppins', sans-serif; color: #ffffff; box-shadow: 0 4px 12px rgba(93, 142, 163, 0.4); z-index: 2" bgcolor="5A7D91"]` +
                     `[tr style="border: none !important;"]` +
-                    `[tr style="border: none !important;"]` +
                     `[td style="border: none!important; padding: 5px"]` +
                     `[url=https://www.policiarcc.com/t31424-efe-lista-de-membros][size=9][color=white]ACESSAR A LISTAGEM DE MEMBROS[/color][/size][/url]` +
                     `[/td][/tr][/table]`;
@@ -1055,7 +1038,6 @@
                 groups[gId].forEach(nick => {
                     const safeNick = nick.replace(/[^a-zA-Z0-9]/g, '_');
                     const comp = formData.get(`comprovacoes_g${gId}_${safeNick}`) || "";
-                    // ATUALIZADO: Inclui Cargo Atual e Novo Cargo
                     rows.push([timestamp, tipo, nick, cargoAtual, novoCargo, motivo, data, comp]);
                 });
             });
@@ -1245,7 +1227,7 @@
                 replacements['{termino}'] = dataTerminoStr;
 
             } else {
-                // Promoção -> NÃO Envia MP
+         
                 return null;
             }
         }
@@ -1254,7 +1236,6 @@
              subject = "[EFE] Entrada";
         }
         else if (formId === 'form-saida') {
-             // Saída -> NÃO Envia MP
              return null;
         }
         else {
@@ -1341,7 +1322,6 @@
             try {
                 const formData = new FormData(form);
                 
-                // --- LÓGICA ESPECÍFICA DO MODO DA (Entrada) ---
                 if (form.id === 'form-entrada' && document.getElementById('check-membro-da').checked) {
                     const aplicador = document.getElementById('da-aplicador-input').value;
                     const veredito = document.getElementById('da-veredito-select').value;
@@ -1360,16 +1340,14 @@
                     }
                 }
                 
-                // 1. Planilha Normal
+               
                 sendToSheet(form.id, formData, form);
 
                 handlePunishmentTabs(form.id, form);
                 
-                // 2. MPs (GitHub Content) - ATUALIZADO: Não envia para Saída/Promoção
                 const mpForms = ['form-entrada', 'form-saida', 'form-expulsao', 'form-promocao', 'form-advertencia', 'form-reintegracao'];
                 
                 if (mpForms.includes(form.id)) {
-                    // Prepara a lista de nicks
                     let nicksToSend = [];
                     if (['form-saida', 'form-expulsao', 'form-promocao', 'form-advertencia'].includes(form.id)) {
                         const chips = Array.from(form.querySelector('.nickname-chips-container').children);
@@ -1379,7 +1357,6 @@
                         if (rawNick) nicksToSend = rawNick.split('/').map(n => n.trim()).filter(n => n);
                     }
                     
-                    // Verifica se realmente tem que enviar MP (Para Promoção e Saída, prepareMPData retorna null)
                     let shouldShowLoading = false;
                     for (let i = 0; i < nicksToSend.length; i++) {
                         const template = await prepareMPData(form.id, nicksToSend[i], formData, form);
@@ -1405,16 +1382,13 @@
                     }
                 }
 
-                // 3. Postar no Fórum (COM LÓGICA DE SUBGRUPOS + ANTI-FLOOD FORTE)
                 if (form.id !== 'form-advertencia') {
                     const queue = generatePostQueue(form.id, formData, form);
                     
-                    // Verifica subgrupos ativos apenas para Licença, Retorno e Prolongamento
                     let subgruposParaPostar = [];
                     const subCheck = form.querySelector('.subgroup-toggle-checkbox');
                     
                     if (subCheck && subCheck.checked) {
-                        // Busca o container de opções dentro do formulário atual
                         const optionsContainer = form.querySelector('.subgroup-options-wrapper');
                         const selectedButtons = optionsContainer.querySelectorAll('.subgroup-selection-btn.selected');
                         
@@ -1431,35 +1405,27 @@
                     for (let i = 0; i < queue.length; i++) {
                         const item = queue[i];
                         
-                        // Postagem Principal
                         btnText.textContent = `POSTANDO ${item.id.toUpperCase()}...`;
                         showNotificationProgress("Processando...", `Enviando postagem do <strong>${item.id}</strong> (Tópico Principal)...`);
                         await postToForumTopic(CONFIG.mainTopicId, item.bbcode);
                         
-                        // Postagens em Subgrupos (com ANTI-FLOOD VISUAL)
                         if (subgruposParaPostar.length > 0) {
                             for (let s = 0; s < subgruposParaPostar.length; s++) {
                                 const sub = subgruposParaPostar[s];
-                                
-                                // Anti-flood: Espera 16 segundos com contador visual
                                 for (let sec = 16; sec > 0; sec--) {
                                     btnText.textContent = `AGUARDE... ${sec}s`;
                                     showNotificationProgress("Anti-Flood Ativo", `Aguardando <strong>${sec} segundos</strong> para postar no tópico do <strong>${sub.name}</strong>...`);
                                     await delay(1000);
                                 }
 
-                                // Captura a permissão específica deste subgrupo
                                 const specificPerm = formData.get(`permissao_${sub.name}`);
                                 
-                                // Substitui ou adiciona a permissão no BBCode
                                 let specificBBCode = item.bbcode;
                                 if(specificPerm) {
                                      if(specificBBCode.includes('[b]Permissão:[/b]')) {
-                                         // Substitui se já existir (Licença/Saída)
                                          specificBBCode = specificBBCode.replace(/\[b\]Permissão:\[\/b\] .+/g, `[b]Permissão:[/b] ${specificPerm}`);
                                          specificBBCode = specificBBCode.replace(/\[b\]Permissão:\[\/b\].*?\n/g, `[b]Permissão:[/b] ${specificPerm}\n`);
                                      } else {
-                                         // Adiciona ao final se não existir (Retorno/Prolongamento)
                                          specificBBCode += `\n[b]Permissão:[/b] ${specificPerm}`;
                                      }
                                 }
@@ -1559,11 +1525,9 @@
         document.getElementById('licenca-duration-badge').textContent = "30 dias";
         document.getElementById('licenca-duration-helper').textContent = `Retorno previsto em: DD/MM/YYYY`;
         
-        // RESETAR DA
         const daCheck = document.getElementById('check-membro-da');
         if(daCheck && daCheck.checked) daCheck.click(); 
 
-        // RESETAR SUBGRUPOS (Itera sobre todos os formulários)
         document.querySelectorAll('.subgroup-toggle-checkbox').forEach(cb => {
             if(cb.checked) cb.click();
         });
@@ -1575,7 +1539,6 @@
       const targetForm = params.get('form'); 
       if (!targetForm) return;
 
-      // 1. Abre o formulário correto
       const menuOption = document.querySelector(`.custom-dropdown-option[data-value="${targetForm}"]`);
       if (menuOption) menuOption.click(); else return;
 
@@ -1583,7 +1546,6 @@
       const activeForm = document.getElementById(`form-${targetForm}`);
       if (!activeForm) return;
 
-      // 2. Preenche Nicknames
       const nicksParam = params.get('nicks') || params.get('nickname');
       if (nicksParam) {
           const inputMap = { 'entrada': 'entrada-nick-input', 'saida': 'saida-nickname-input', 'expulsao': 'expulsao-nickname-input', 'promocao': 'promocao-nick-input', 'advertencia': 'advertencia-nick-input' };
@@ -1599,26 +1561,22 @@
           }
       }
 
-      // 3. Lógica para ativar os Toggles (DA e Subgrupos) via Link
-      // Para o DA (Formulário Entrada) -> use &da=true
       if (targetForm === 'entrada' && params.get('da') === 'true') {
           const daCheck = document.getElementById('check-membro-da');
           if (daCheck && !daCheck.checked) {
-              daCheck.click(); // Simula o clique para ativar visual e lógica
+              daCheck.click(); 
           }
       }
 
-      // Para Subgrupos (Licença, Retorno, Prolongamento) -> use &subgrupos=true
       if (['licenca', 'retorno_licenca', 'prolongamento'].includes(targetForm) && params.get('subgrupos') === 'true') {
           const subCheck = activeForm.querySelector('.subgroup-toggle-checkbox');
           if (subCheck && !subCheck.checked) {
-              subCheck.click(); // Ativa o toggle
+              subCheck.click(); 
           }
           
-          // Opcional: Se quiser já selecionar os grupos via link (ex: &grupos=DA,DM)
           const gruposParam = params.get('grupos');
           if (gruposParam) {
-              await new Promise(r => setTimeout(r, 300)); // Pequeno delay para a animação abrir
+              await new Promise(r => setTimeout(r, 300)); 
               const grupos = gruposParam.split(',');
               grupos.forEach(g => {
                   const btn = activeForm.querySelector(`.subgroup-selection-btn[data-group="${g.toUpperCase()}"]`);
@@ -1629,7 +1587,6 @@
           }
       }
 
-      // 4. Preenche os demais campos
       const fillFields = () => {
           params.forEach((value, key) => {
               if (['form', 'nicks', 'nickname', 'nicknames', 'da', 'subgrupos', 'grupos'].includes(key)) return; 
