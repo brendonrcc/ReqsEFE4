@@ -1,9 +1,9 @@
-    const CONFIG = { 
+        const CONFIG = { 
         mainTopicId: 38026, 
         topicDA: 38468, 
         topicDRI: 38580,
         topicDM: 36210,  
-        sheetUrl: "https://script.google.com/macros/s/AKfycbxxFGcukrz75Y80Dvlawthnbx1QnUUy-keqR6KAlNxQXeeUujKPi982bPTXlbyYfsIxuQ/exec",
+        sheetUrl: "https://script.google.com/macros/s/AKfycby2tB4_Koe6EF39NYt76J7PPLNPDrIdqkrOv4-39Ohs2evTbULpZSKsnCHqI6hAJtp_Ww/exec",
         daSheetUrl: "https://script.google.com/macros/s/AKfycbw-NBtKacudTTa5aH-BhF_foiGa8_4IrWVtS8zVq7b8j0PkA8r-o8JaAUw5SrazJAFu/exec" 
     };
     
