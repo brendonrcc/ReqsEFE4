@@ -361,56 +361,58 @@
     });
 
     function showToast(title, message, type = "info", duration = 6000) {
-        const container = document.getElementById('toast-container');
-        if(!container) return;
+        const container = document.getElementById('toast-container');
+        if(!container) return;
 
-        const colors = {
-            warning: "bg-amber-50 border-amber-200 text-amber-800",
-            danger: "bg-red-50 border-red-200 text-red-800",
-            info: "bg-blue-50 border-blue-200 text-blue-800"
-        };
-        const iconColor = {
-            warning: "text-amber-500",
-            danger: "text-red-500",
-            info: "text-blue-500"
-        };
-        const icons = {
-            warning: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />',
-            danger: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />', 
-            info: '<path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />'
-        };
+        const colors = {
+            warning: "bg-amber-50 border-amber-200 text-amber-800",
+            danger: "bg-red-50 border-red-200 text-red-800",
+            info: "bg-blue-50 border-blue-200 text-blue-800"
+        };
+        const iconColor = {
+            warning: "text-amber-500",
+            danger: "text-red-500",
+            info: "text-blue-500"
+        };
+        const icons = {
+            warning: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />',
+            danger: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />', 
+            info: '<path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />'
+        };
 
-        const el = document.createElement('div');
-        el.className = `p-4 rounded-2xl border shadow-lg backdrop-blur-md flex gap-3 transform transition-all duration-300 pointer-events-auto ${colors[type]} toast-enter`;
-        el.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 shrink-0 ${iconColor[type]}">${icons[type]}</svg>
-            <div class="flex-1">
-                <h4 class="font-bold text-sm mb-1">${title}</h4>
-                <p class="text-xs font-medium leading-relaxed opacity-90">${message}</p>
-            </div>
-            <button onclick="this.parentElement.classList.add('toast-exit-active'); setTimeout(()=>this.parentElement.remove(), 300)" class="shrink-0 text-current opacity-50 hover:opacity-100"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg></button>
-        `;
+        const el = document.createElement('div');
 
-        container.appendChild(el);
-        
-        requestAnimationFrame(() => {
-            el.classList.remove('toast-enter');
-            el.classList.add('toast-enter-active');
-        });
+        el.className = `w-full max-w-sm p-3 mb-3 rounded-lg border shadow-md backdrop-blur-md flex items-start gap-2.5 transform transition-all duration-300 pointer-events-auto ${colors[type]} toast-enter`;
+        
+        el.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0 mt-0.5 ${iconColor[type]}">${icons[type]}</svg>
+            <div class="flex-1 min-w-0"> 
+                <h4 class="font-bold text-sm leading-tight mb-0.5">${title}</h4>
+                <p class="text-xs font-medium leading-snug opacity-90 break-words">${message}</p>
+            </div>
+            <button onclick="this.parentElement.classList.add('toast-exit-active'); setTimeout(()=>this.parentElement.remove(), 300)" class="shrink-0 -mt-1 -mr-1 p-1 text-current opacity-50 hover:opacity-100 rounded-md hover:bg-black/5 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+            </button>
+        `;
 
-        setTimeout(() => {
-            if(el.parentElement) {
-                el.classList.remove('toast-enter-active');
-                el.classList.add('toast-exit-active');
-                setTimeout(() => el.remove(), 300);
-            }
-        }, duration);
-    }
+        container.appendChild(el);
+        
+        requestAnimationFrame(() => {
+            el.classList.remove('toast-enter');
+            el.classList.add('toast-enter-active');
+        });
+
+        setTimeout(() => {
+            if(el.parentElement) {
+                el.classList.remove('toast-enter-active');
+                el.classList.add('toast-exit-active');
+                setTimeout(() => el.remove(), 300);
+            }
+        }, duration);
+    }
 
     async function updateAvatarIcon(input) {
-        // --- MODIFICAÇÃO INICIO: IGNORAR VERIFICAÇÃO PARA FORM-ATUALIZACAO ---
         if (input.closest && input.closest('#form-atualizacao')) return;
-        // --- MODIFICAÇÃO FIM ---
 
         const nick = input.value.trim();
         const iconBox = input.previousElementSibling;
