@@ -417,11 +417,13 @@
         if (!nick) return;
 
         try {
-            const response = await fetch(`https://www.habbo.com.br/api/public/users?name=${nick}`);
+            // CORREÇÃO: encodeURIComponent garante que caracteres especiais sejam lidos corretamente
+            const response = await fetch(`https://www.habbo.com.br/api/public/users?name=${encodeURIComponent(nick)}`);
             if (response.ok) {
                 const data = await response.json();
                 if (data.uniqueId) {
-                    const imgUrl = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${data.name}&headonly=1`;
+                    // Usa data.name para garantir a capitalização correta vinda do Habbo
+                    const imgUrl = `https://www.habbo.com.br/habbo-imaging/avatarimage?user=${encodeURIComponent(data.name)}&headonly=1`;
                     iconBox.innerHTML = `<img src="${imgUrl}" class="max-w-none" alt="">`;
                     iconBox.classList.add("overflow-hidden");
                 }
@@ -445,6 +447,7 @@
         btn.disabled = true;
         btn.innerHTML = `<svg class="spinner w-4 h-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
 
+        // Separa por barra, mantendo as pontuações internas de cada nick
         const segments = rawValue.split('/').map(n => n.trim()).filter(n => n.length > 0);
         let addedCount = 0; 
 
@@ -457,19 +460,28 @@
                 let nick = segment;
                 let targetGroup = 1;
 
+                // Verifica se há definição de grupo (Ex: Nickname:2)
+                // O split aqui só ocorre se houver o separador de grupo explícito
                 if (segment.includes(':')) {
                     const parts = segment.split(':');
-                    nick = parts[0].trim();
-                    const parsedGroup = parseInt(parts[1]);
-                    if (!isNaN(parsedGroup) && parsedGroup >= 1 && parsedGroup <= 4) {
-                        targetGroup = parsedGroup;
+                    // Verifica se a parte após os dois pontos é realmente um número (grupo)
+                    const potentialGroup = parseInt(parts[parts.length - 1]);
+                    
+                    if (!isNaN(potentialGroup) && potentialGroup >= 1 && potentialGroup <= 4) {
+                        targetGroup = potentialGroup;
+                        // Remove apenas o indicador de grupo do final, preservando o nick (caso o nick tenha :)
+                        parts.pop(); 
+                        nick = parts.join(':').trim();
                     }
                 }
 
-                const response = await fetch(`https://www.habbo.com.br/api/public/users?name=${nick}`);
+                // CORREÇÃO: encodeURIComponent garante que nicks como -.Keith.- ou Bills_Hakai sejam lidos corretamente
+                const response = await fetch(`https://www.habbo.com.br/api/public/users?name=${encodeURIComponent(nick)}`);
+                
                 if (response.ok) {
                     const data = await response.json();
                     if (data.uniqueId) {
+                        // data.name contém o nick com a formatação exata do Habbo (Maiúsculas/Minúsculas)
                         if (addChip(data.name, chipsContainerId, hiddenInputId, containerId, limit, enableGroups, targetGroup)) {
                             addedCount++;
                         }
@@ -483,9 +495,10 @@
                 input.value = '';
                 showToast("Sucesso", `${addedCount} Nickname(s) adicionado(s).`, "info", 3000);
             } else if (segments.length > 0) {
-                showToast("Aviso", "Nenhum nickname foi adicionado.", "warning", 3000);
+                showToast("Aviso", "Nenhum nickname foi adicionado (verifique a ortografia).", "warning", 3000);
             }
         } catch (error) {
+            console.error(error);
             showToast("Erro de Conexão", "Falha ao verificar usuários na API.", "warning");
         } finally {
             btn.disabled = false;
